@@ -11,11 +11,11 @@
 import time
 
 # Interface Física
-from interfaceFisica import fisica
+from interfaceFisicaServer import fisica
 
 # enlace Tx e Rx
-from enlaceRx import RX
-from enlaceTx import TX
+from enlaceRxServer import RX
+from enlaceTxServer import TX
 
 class enlace(object):
     
