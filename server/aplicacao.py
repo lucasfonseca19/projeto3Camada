@@ -24,9 +24,6 @@ import numpy as np
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
 serialName = "COM3"                  # Windows(variacao de)
 
-def separador(listadebytes):
-    separada = listadebytes.split(b'AA')
-    return len(separada)
 
 def main():
     try:
@@ -38,17 +35,7 @@ def main():
         # Ativa comunicacao. Inicia os threads e a comunicação seiral 
         server.enable()
         
-        tamanhoembytes, nRx = server.getData(1)
-        # print(tamanhoembytes)
-        tamanhoemdec = int.from_bytes(tamanhoembytes,byteorder="little")
-        # print(tamanhoemdec)
-        lista,nRX2 = server.getData(tamanhoemdec)
-        # print(lista)
-        separada = lista.split(b'\xAA')
-        numerodecomandos = len(separada)-1
-        # print(numerodecomandos)
-        ncomandosbytes=bytes([numerodecomandos])
-        server.sendData(np.asarray(ncomandosbytes))
+        
 
         # Encerra comunicação
         print("-------------------------")

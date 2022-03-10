@@ -15,7 +15,6 @@ from enlace import *
 import time
 import numpy as np
 import random as rd
-from sorteador import sorteador
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer comunicaçao
 #   para saber a sua porta, execute no terminal :
@@ -38,22 +37,7 @@ def main():
         # Ativa comunicacao. Inicia os threads e a comunicação seiral 
         client.enable()
         #Se chegamos até aqui, a comunicação foi aberta com sucesso. Faça um print para informar.
-        Numero_comandos = rd.randint(10,30)
-        Bytes_separacao = b"\xAA"
-        listofbytes,lengthlist = sorteador(Numero_comandos,Bytes_separacao)
-        lengthlistinbyte = bytes([lengthlist])
-        # print(lengthlist)
-        # print(lengthlistinbyte)
-        client.sendData(np.asarray(lengthlistinbyte))
-        time.sleep(0.5)
-        client.sendData(np.asarray(listofbytes))
-        # print(listofbytes)
-        # print(Numero_comandos)
-        ncomandosrecebido,nRx = client.getData(2)
-        ncomandosrecebido=int.from_bytes(ncomandosrecebido,byteorder="little")
         
-        if Numero_comandos==ncomandosrecebido:
-            print("funcionou")
   
         
     
