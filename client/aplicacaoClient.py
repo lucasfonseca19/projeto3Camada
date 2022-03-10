@@ -6,45 +6,45 @@
 ####################################################
 
 
-#esta é a camada superior, de aplicação do seu software de comunicação serial UART.
-#para acompanhar a execução e identificar erros, construa prints ao longo do código! 
-
-
 from ast import Num
-from enlace import *
+from enlaceClient import *
 import time
 import numpy as np
 import random as rd
 
-# voce deverá descomentar e configurar a porta com através da qual ira fazer comunicaçao
-#   para saber a sua porta, execute no terminal :
 #   python -m serial.tools.list_ports
-# se estiver usando windows, o gerenciador de dispositivos informa a porta
 
-#use uma das 3 opcoes para atribuir à variável a porta usada
-#serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM4"                  # Windows(variacao de)
+serialName = "COM4"                  
 
 
 def main():
     try:
-        #declaramos um objeto do tipo enlace com o nome "com". Essa é a camada inferior à aplicação. Observe que um parametro
-        #para declarar esse objeto é o nome da porta.
         client = enlace('COM4')
-        
     
-        # Ativa comunicacao. Inicia os threads e a comunicação seiral 
+    
         client.enable()
-        #Se chegamos até aqui, a comunicação foi aberta com sucesso. Faça um print para informar.
         
-  
-        
-    
-        # Encerra comunicação
-        print("-------------------------")
-        print("Comunicação encerrada")
-        print("-------------------------")
+        # Estrutura datagrama:
+        # |      HEAD      |     PAYLOAD   | EOP | 
+        # ▭▭▭▭▭▭▭▭▭▭ ... ▭▭▭ ... ▭▭▭▭
+        #
+        # LIMITE DE ENVIO: 128 BYTES
+        # HEAD(10 BYTES) + PAYLOAD(0 - 114 BYTES) + EOP(2 BYTES))
+        # HEAD:
+        #      Número de pacote e o numero de pacotes totais
+        #TODO: 
+        # Implementar Handshake
+        #   - Envio de uma mensagem para o servidor
+        #   - Recebimento de uma mensagem do servidor dentro de 5 segundos
+        #   - caso não receba, imprimir "Servidor Inativo.Tenta Novamente?S/N"
+        #   - caso o usuário responda "S", reenvie a mensagem de handshake
+        #   - caso o usuário responda "N", finalize a conexão
+        #   - caso o client receba uma mensagem do servidor, imprima "Conexão estabelecida"
+
+        #TODO:
+        # Checagem constante do recebimento da mensagem para prosseguir com o envio da seguinte
+        #TODO:
+
         client.disable()
         
     except Exception as erro:
@@ -53,6 +53,5 @@ def main():
         client.disable()
         
 
-    #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
     main()
