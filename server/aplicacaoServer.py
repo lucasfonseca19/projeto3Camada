@@ -37,7 +37,7 @@ def main():
         # --------------------- HANDSHAKE --------------------- #
         handshakepkg,_nrx = server.getData(14)
         print(handshakepkg)
-        server.sendData(handshakepkg)
+        # server.sendData(handshakepkg)
         print('handshake resposta enviado')
 
         #---------------------RECEBENDO IMAGEM---------------------#
@@ -67,12 +67,13 @@ def main():
                 print("Envio incorreto")
                 sys.exit()
             # Agora iremos receber os demais pacotes.
-            pacote_atual = 1
-            pacote_anterior = 0
-            for i in range(numero_de_pacotes-1):
+            pacote_atual = 2
+            pacote_anterior = 1
+            for i in range(2,numero_de_pacotes):
                 head, nRx = server.getData(10)
                 tamanho_payload = head[2]
                 pacote_atual = head[0]
+                print(pacote_atual)
                 payload, nRx = server.getData(tamanho_payload)
                 IMAGEM += payload
                 EOP, nRx = server.getData(4)
@@ -81,6 +82,7 @@ def main():
                 if pacote_atual != pacote_anterior+1:
                     print("Erro no envio")
                     sys.exit()
+
                 pacote_anterior = pacote_atual
                 if EOP != b'\xEE\x23\x4C\xA9':
                     sys.exit()
