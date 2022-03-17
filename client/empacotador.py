@@ -33,10 +33,11 @@ def empacotador (imagem):
             # -----------------------------------------
             # --------------- TESTE 3 -----------------
             # tamanho do payload errado
-            # tam_payload = bytes(2)
+            #tamanho_payload = bytes(100000)
             n_do_pacote = bytes([i+1])
             numero_de_pacotes_byte = bytes([numero_de_pacotes])
-            tamanho_payload = bytes([len(payload)])
+            tamanho_payload = bytes([len(payload)+10])
+            #tamanho_payload = bytes([len(payload)])
             head = n_do_pacote+numero_de_pacotes_byte+tamanho_payload+b'\xAA\xDD\xFF\xFF\xFF\xAA\xDD'
             package = head+payload+EOF
             listofpackages.append(package)

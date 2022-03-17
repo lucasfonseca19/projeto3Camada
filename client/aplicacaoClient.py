@@ -57,6 +57,7 @@ def main():
             elif resposta == False:
                 entrada = input("Servidor Inativo. Tenta Novamente? S/N\n")
                 if entrada == "N":
+                    print("Tchau")
                     sys.exit(0)
                     
         # ------------------------- Mandando imagem ------------------------ #   
