@@ -22,13 +22,13 @@ import numpy as np
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM13"                  # Windows(variacao de)
+serialName = "COM3"                  # Windows(variacao de)
 
 def main():
     try:
         #declaramos um objeto do tipo enlace com o nome "com". Essa é a camada inferior à aplicação. Observe que um parametro
         #para declarar esse objeto é o nome da porta.
-        server = enlace('COM13')
+        server = enlace('COM3')
 
 
         # Ativa comunicacao. Inicia os threads e a comunicação seiral
@@ -50,6 +50,7 @@ def main():
         # entrar na lógica de ‘loop’ de recebimento de pacotes.
         if size_payload < 114:
             msgAndEOP, nRx = server.getData(size_payload+4)
+            
             IMAGEM += msgAndEOP
             #salvar em um arquivo
         else:
@@ -74,7 +75,11 @@ def main():
                 tamanho_payload = head[2]
                 pacote_atual = head[0]
                 print(pacote_atual)
-                payload, nRx = server.getData(tamanho_payload)
+                try:
+                    payload, nRx = server.getData(tamanho_payload)
+                except:
+                    print("tamanho do payload errado")
+                    
                 IMAGEM += payload
                 EOP, nRx = server.getData(4)
                 # Iremos agora verificar se o numero do pacote atual é igual 1 mais o numero do pacote anterior.
@@ -85,11 +90,13 @@ def main():
 
                 pacote_anterior = pacote_atual
                 if EOP != b'\xEE\x23\x4C\xA9':
+                    print("EOP incorreto e tamanho do payload incorreto")
                     sys.exit()
 
                 server.sendData(handshakepkg)
             
             print(IMAGEM)
+
             f = open("imagem.jpg", "wb")
             f.write(IMAGEM)
             f.close()
