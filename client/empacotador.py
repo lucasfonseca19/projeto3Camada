@@ -27,6 +27,13 @@ def empacotador (imagem):
         EOF = b"\xEE\x23\x4C\xA9"
         for i in range(numero_de_pacotes):
             payload = img[(i)*114:(i+1)*114]
+            # --------------- TESTE 2 -----------------
+            # numero do pacote errado:
+            #n_do_pacote = bytes([i])
+            # -----------------------------------------
+            # --------------- TESTE 3 -----------------
+            # tamanho do payload errado
+            # tam_payload = bytes(2)
             n_do_pacote = bytes([i+1])
             numero_de_pacotes_byte = bytes([numero_de_pacotes])
             tamanho_payload = bytes([len(payload)])

@@ -15,7 +15,7 @@ import sys
 from empacotador import *
 #   python -m serial.tools.list_ports
 
-serialName = "COM13"                  
+serialName = "COM13"
 
 
 def main():
