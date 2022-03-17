@@ -29,60 +29,68 @@ def main():
         #declaramos um objeto do tipo enlace com o nome "com". Essa é a camada inferior à aplicação. Observe que um parametro
         #para declarar esse objeto é o nome da porta.
         server = enlace('COM3')
-        
-    
-        # Ativa comunicacao. Inicia os threads e a comunicação seiral 
+
+
+        # Ativa comunicacao. Inicia os threads e a comunicação seiral
         server.enable()
-        
-        #ETAPAS:
-        #HandShake
-            #recebe handshakepackage do client
-            #Envia resposta para client
-            #Responde sim para a mensagem eviada pelo client
-        
+
+        # --------------------- HANDSHAKE --------------------- #
         handshakepkg,_nrx = server.getData(14)
         print(handshakepkg)
         server.sendData(handshakepkg)
         print('handshake resposta enviado')
 
-        #=========RECEBENDO IMAGEM=========#
+        #---------------------RECEBENDO IMAGEM---------------------#
         IMAGEM = b""
-        first_head,nRx = server.getData(10)
+        first_head, nRx = server.getData(10)
         print(first_head[2])
         size_payload = first_head[2]
         numero_de_pacotes = first_head[1]
-
+        # Caso a imagem seja menor que o payload de um pacote, então não precisaremos
+        # entrar na lógica de ‘loop’ de recebimento de pacotes.
         if size_payload < 114:
-            msgAndEOP,nRx = server.getData(size_payload+4)
-            IMAGEM+=msgAndEOP
+            msgAndEOP, nRx = server.getData(size_payload+4)
+            IMAGEM += msgAndEOP
             #salvar em um arquivo
         else:
-            primeiro_payload,nRx=server.getData(size_payload)
-            IMAGEM+=primeiro_payload
-
-            primeiro_EOP,nRx = server.getData(4)
-
+            # Caso a imagem seja maior que o payload de um pacote, então precisaremos
+            # entrar na lógica de ‘loop’ de recebimento de pacotes.
+            # Salva o payload do primeiro pacote em uma variável que será usada para
+            # concatenar os demais payloads, resultando em uma imagem completa.
+            primeiro_payload, nRx = server.getData(size_payload)
+            IMAGEM += primeiro_payload
+            # Iremos agora pegar mais 4 ‘bytes’ para saber e verificar se são o EOP.
+            primeiro_EOP, nRx = server.getData(4)
             if primeiro_EOP == b'\xEE\x23\x4C\xA9':
                 print("primeiro enviado")
             else:
-                print("Something went wrong")
+                print("Envio incorreto")
                 sys.exit()
-            
+            # Agora iremos receber os demais pacotes.
+            pacote_atual = 1
+            pacote_anterior = 0
             for i in range(numero_de_pacotes-1):
-                head,nRx = server.getData(10)
-                tamanho = head[2]
-                numero_do_pacote = head[0]
-                payload,nRx=server.getData(tamanho)
-                IMAGEM+=payload
-                EOP,nRx = server.getData(4)
-
+                head, nRx = server.getData(10)
+                tamanho_payload = head[2]
+                pacote_atual = head[0]
+                payload, nRx = server.getData(tamanho_payload)
+                IMAGEM += payload
+                EOP, nRx = server.getData(4)
+                # Iremos agora verificar se o numero do pacote atual é igual 1 mais o numero do pacote anterior.
+                # Se não for, então houve um erro.
+                if pacote_atual != pacote_anterior+1:
+                    print("Erro no envio")
+                    sys.exit()
+                pacote_anterior = pacote_atual
                 if EOP != b'\xEE\x23\x4C\xA9':
                     sys.exit()
 
                 server.sendData(handshakepkg)
             
             print(IMAGEM)
-
+            f = open("imagem.jpg", "wb")
+            f.write(IMAGEM)
+            f.close()
 
 
         # Encerra comunicação
